@@ -15,8 +15,9 @@ db.once("open", () => {
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname, 'views'));
 
-app.get('/', (req,res) => {
-    res.render('index');
+app.get('/', async (req,res) => {
+    const campgrounds = await Campground.find({});
+    res.render('index',{campgrounds});
 })
 
 app.get('/makeCampground', async (req,res) => {
