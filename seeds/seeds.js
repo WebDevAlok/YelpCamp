@@ -31,7 +31,7 @@ const seedDB = async () => {
         //console.log(`${ descriptors[Math.floor(Math.random() * descriptors.length)] } ${  places[Math.floor(Math.random() * places.length)] }`); 
     }
 }
-    
+
 seedDB().then(() => {
     mongoose.connection.close();
 })

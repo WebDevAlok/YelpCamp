@@ -71,6 +71,10 @@ app.get('/makeCampground', async (req,res) => {
     res.send(camp);
 });
 
+app.use((err,res,req,next) => {
+    res.send('Oh boy something went wrong')
+})
+
 app.listen(3000, () => {
     console.log('Serving on port 3000!');
 })
