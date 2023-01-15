@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Review = require('./Reviews')
 const Schema = mongoose.Schema;
+mongoose.set('strictQuery', true);
 
 const CampgroundSchema = new Schema({
     image: String,
@@ -8,6 +9,10 @@ const CampgroundSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    author: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+    },
     reviews: [
         {
             type: Schema.Types.ObjectId,
