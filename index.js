@@ -15,7 +15,6 @@ const User = require('./models/User');
 const userRoutes = require('./routes/Users')
 const campgroundRoutes = require('./routes/Campground');
 const reviewRoutes = require('./routes/Reviews');
-const { Store } = require('express-session');
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp');
 
@@ -58,7 +57,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req,res,next) => {
-    console.log(req.session);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
