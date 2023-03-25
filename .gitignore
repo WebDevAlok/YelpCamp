@@ -15,5 +15,6 @@ logs
 .idea/
 .vscode/
 *.sw*
+
 # Ignore the problems file
 problems.txt

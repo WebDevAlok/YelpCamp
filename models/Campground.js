@@ -3,8 +3,17 @@ const Review = require('./Reviews')
 const Schema = mongoose.Schema;
 mongoose.set('strictQuery', true);
 
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+});
+
+ImageSchema.virtual('thumbnail').get(function() {
+    return this.url.replace('/upload','/upload/w_400');
+})
+
 const CampgroundSchema = new Schema({
-    image: String,
+    images: [ImageSchema],
     title: String,
     price: Number,
     description: String,
