@@ -14,7 +14,7 @@
                 <h5 class="card-title"><%= campground.title %></h5>
                 <p class="card-text"><%= campground.description %></p>
                 <p>
-                    <small class="text-muted"><%= campground.location %></small>
+                    <small class="text-muted"><%= campground.location.name %></small>
                 </p>
                 <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">View <%= campground.title %></a>
             </div>
