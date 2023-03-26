@@ -1,7 +1,13 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const mongoose = require('mongoose');
 const Campground = require('../models/Campground');
 const cities = require('./cities');
 const { descriptors, places } = require('./seedHelpers');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp');
 
@@ -10,6 +16,20 @@ db.on("error", console.error.bind(console,'connection error:'));
 db.once("open", () => {
     console.log('Database Connected');
 });
+
+async function fetchLocation() {
+    const random1000 = Math.floor(Math.random() * 1000);
+    const name = `${cities[random1000].city}, ${cities[random1000].state}`;
+    const geoData = await geocoder.forwardGeocode({
+        query: name,
+        limit: 1
+    }).send()
+    const location = {
+        name: name,
+        geometry: geoData.body.features[0].geometry
+    }
+    return location
+}
 
 const fetchImage = [
     {
@@ -58,7 +78,6 @@ const sample = (array) => array[Math.floor(Math.random() * array.length)];
 const seedDB = async () => {
     await Campground.deleteMany({});
     for (let i = 0; i<5; i++) {
-        const random1000 = Math.floor(Math.random() * 1000);
         const camp = new Campground( {
             author: '63c0f8bbbd32b09d384fe670',
             images: [
@@ -68,7 +87,7 @@ const seedDB = async () => {
             title: `${ sample(descriptors) } ${ sample(places) }`,
             price: `${10 + Math.floor(Math.random() * 20)}`,
             description:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique iaculis sem. Aliquam sagittis imperdiet leo, sed rhoncus enim. In eget auctor nisl, ut malesuada nisi. Interdum et malesuada fames ac ante ipsum primis in faucibus.',
-            location: `${cities[random1000].city}, ${cities[random1000].state}`,
+            location: await fetchLocation(),
         })
         await camp.save();
         //Uncomment the next line to prints out the value of random1000 use for selecting cities from cities.js
