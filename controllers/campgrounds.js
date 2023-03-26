@@ -1,5 +1,8 @@
 const Campground = require('../models/Campground');
-const { cloudinary } = require('../cloudinary')
+const { cloudinary } = require('../cloudinary');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req,res) => {
     const campgrounds = await Campground.find({});
@@ -11,14 +14,21 @@ module.exports.renderNewForm = (req,res) => {
 }
 
 module.exports.createNew = async (req,res) => {
-    const { campground } = req.body;
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send()
+    console.log(geoData.body.features[0].geometry.coordinates);
+    //console.log(JSON.parse(geoData.rawBody));
+    res.send("OK!")
+    /* const { campground } = req.body;
     const newCampground = new Campground(campground);
     newCampground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     newCampground.author = req.user._id;
     await newCampground.save();
     console.log(newCampground);
     req.flash('success','Successfully made a new Campground!');
-    res.redirect(`/campgrounds/${newCampground._id}`);
+    res.redirect(`/campgrounds/${newCampground._id}`); */
 }
 
 module.exports.show = async (req,res) => {
@@ -49,7 +59,7 @@ module.exports.renderEditForm = async (req,res) => {
 }
 
 module.exports.updateCampground = async (req,res) => {
-    console.log(req.body);
+    //console.log(req.body);
     const { id } = req.params;
     const updatedCampground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
@@ -60,7 +70,7 @@ module.exports.updateCampground = async (req,res) => {
             await cloudinary.uploader.destroy(filename);
         }
         await updatedCampground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
-        console.log(updatedCampground);
+        //console.log(updatedCampground);
     }
     req.flash('success','Successfully updated the Campground!');
     res.redirect(`/campgrounds/${updatedCampground._id}`);
