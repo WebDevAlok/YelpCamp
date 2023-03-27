@@ -61,8 +61,8 @@ const fetchImage = [
         filename: 'YelpCamp/nxibkdnnrir9trktmwk0'
     },
     {
-        url: 'https://res.cloudinary.com/dsmi2iybf/image/upload/v1679563211/YelpCamp/mdql2mih15kkgiolrvd7.jpg',
-        filename: 'YelpCamp/mdql2mih15kkgiolrvd7'
+        url: 'https://res.cloudinary.com/dsmi2iybf/image/upload/v1679892857/YelpCamp/wwjbf4okugmwgdjebkxh.jpg',
+        filename: 'YelpCamp/wwjbf4okugmwgdjebkxh'
     },
     {
         url: 'https://res.cloudinary.com/dsmi2iybf/image/upload/v1679563211/YelpCamp/ecqumvudczdnblgr8u4u.jpg',
