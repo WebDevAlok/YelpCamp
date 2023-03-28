@@ -17,16 +17,19 @@ db.once("open", () => {
     console.log('Database Connected');
 });
 
-async function fetchLocation() {
+function fetchLocation() {
     const random1000 = Math.floor(Math.random() * 1000);
     const name = `${cities[random1000].city}, ${cities[random1000].state}`;
-    const geoData = await geocoder.forwardGeocode({
+    /* const geoData = await geocoder.forwardGeocode({
         query: name,
         limit: 1
-    }).send()
+    }).send() */
     const location = {
         name: name,
-        geometry: geoData.body.features[0].geometry
+        geometry: {
+            type: "Point",
+            coordinates: [cities[random1000].longitude, cities[random1000].latitude]
+        }
     }
     return location
 }
@@ -77,17 +80,17 @@ const fetchImage = [
 const sample = (array) => array[Math.floor(Math.random() * array.length)];
 const seedDB = async () => {
     await Campground.deleteMany({});
-    for (let i = 0; i<5; i++) {
+    for (let i = 0; i<150 ; i++) {
         const camp = new Campground( {
             author: '63c0f8bbbd32b09d384fe670',
             images: [
-                fetchImage[i],
-                fetchImage[i+5]
+                fetchImage[i % 10],
+                fetchImage[(i+1) % 10]
             ],
             title: `${ sample(descriptors) } ${ sample(places) }`,
             price: `${10 + Math.floor(Math.random() * 20)}`,
             description:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique iaculis sem. Aliquam sagittis imperdiet leo, sed rhoncus enim. In eget auctor nisl, ut malesuada nisi. Interdum et malesuada fames ac ante ipsum primis in faucibus.',
-            location: await fetchLocation(),
+            location: fetchLocation()
         })
         await camp.save();
         //Uncomment the next line to prints out the value of random1000 use for selecting cities from cities.js
