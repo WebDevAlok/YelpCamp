@@ -7,6 +7,8 @@ center: campData.location.geometry.coordinates, // starting position [lng, lat]
 zoom: 9, // starting zoom
 });
 
+map.addControl(new mapboxgl.NavigationControl());
+
 const marker1 = new mapboxgl.Marker()
 .setLngLat(campData.location.geometry.coordinates)
 .setPopup(

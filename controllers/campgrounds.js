@@ -14,12 +14,12 @@ module.exports.renderNewForm = (req,res) => {
 }
 
 module.exports.createNew = async (req,res) => {
+    const { campground } = req.body;
     const geoData = await geocoder.forwardGeocode({
         query: req.body.campground.location,
         limit: 1
     }).send()
     //console.log(geoData.body.features[0].geometry)
-    const { campground } = req.body;
     //console.log(campground);
     const newCampground = new Campground(campground);
     newCampground.location.name = campground.location;
@@ -65,6 +65,20 @@ module.exports.updateCampground = async (req,res) => {
     const updatedCampground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
     updatedCampground.images.push(...imgs);
+
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send()
+    const locationDetails = {
+        name: req.body.campground.location,
+        geometry: geoData.body.features[0].geometry
+    }
+
+    //console.log(locationDetails);
+    updatedCampground.location = locationDetails;
+    //console.log(updatedCampground);
+
     await updatedCampground.save();
     if (req.body.deleteImages) {
         for (let filename of req.body.deleteImages) {
@@ -79,7 +93,13 @@ module.exports.updateCampground = async (req,res) => {
 
 module.exports.delete = async (req,res) => {
     const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
+    deletedCampground = await Campground.findByIdAndDelete(id);
+    console.log(deletedCampground);
+    if(deletedCampground.images) {
+        for (let image of deletedCampground.images) {
+            await cloudinary.uploader.destroy(image);
+        }
+    }
     req.flash('success','Successfully deleted Campground!');
     res.redirect('/campgrounds');
 }
